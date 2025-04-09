@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import './App.css';
+import React, { useState } from 'react';
+import './index.css';
+import { Calculator } from 'lucide-react'; // ícone opcional usando lucide-react
 
 function App() {
   const [peso, setPeso] = useState('');
@@ -7,33 +8,36 @@ function App() {
   const [resultado, setResultado] = useState('');
 
   const calcularIMC = () => {
-    const p = parseFloat(peso);
-    const aCm = parseFloat(altura);
-    if (!p || !aCm) {
-      setResultado('Preencha os campos corretamente.');
+    const alturaMetros = parseFloat(altura) / 100;
+    const pesoFloat = parseFloat(peso);
+
+    if (!alturaMetros || !pesoFloat) {
+      setResultado('Preencha os dois campos corretamente.');
       return;
     }
 
-    const a = aCm / 100;
-    const imc = p / (a * a);
-    let classificacao = '';
+    const imc = pesoFloat / (alturaMetros * alturaMetros);
+    const imcFormatado = imc.toFixed(2);
 
-    if (imc < 18.5) classificacao = 'Abaixo do peso';
-    else if (imc < 24.9) classificacao = 'Peso normal';
-    else if (imc < 29.9) classificacao = 'Sobrepeso';
-    else if (imc < 34.9) classificacao = 'Obesidade grau 1';
-    else if (imc < 39.9) classificacao = 'Obesidade grau 2';
-    else classificacao = 'Obesidade grau 3';
+    let mensagem = '';
 
-    setResultado(`IMC: ${imc.toFixed(2)}\nClassificação: ${classificacao}`);
+    if (imc < 18.5) mensagem = 'Abaixo do peso';
+    else if (imc < 24.9) mensagem = 'Peso normal';
+    else if (imc < 29.9) mensagem = 'Sobrepeso';
+    else if (imc < 34.9) mensagem = 'Obesidade grau 1';
+    else if (imc < 39.9) mensagem = 'Obesidade grau 2';
+    else mensagem = 'Obesidade grau 3';
+
+    setResultado(`IMC: ${imcFormatado} — ${mensagem}`);
   };
 
   return (
-    <div className="app-container">
-      <div className="phone-mockup">
-        <div className="phone-header"></div>
-        <h1 className="title">Calculadora de IMC</h1>
-        <div className="form">
+    <div className="card-container">
+      <div className="card">
+        <h2>
+          <Calculator size={24} /> Calculadora de IMC
+        </h2>
+        <div className="inputs">
           <input
             type="number"
             placeholder="Peso (kg)"
@@ -46,9 +50,9 @@ function App() {
             value={altura}
             onChange={(e) => setAltura(e.target.value)}
           />
-          <button onClick={calcularIMC}>Calcular IMC</button>
-          {resultado && <pre className="resultado">{resultado}</pre>}
         </div>
+        <button onClick={calcularIMC}>Calcular</button>
+        <div className="resultado">{resultado}</div>
       </div>
     </div>
   );
