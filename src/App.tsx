@@ -1,61 +1,77 @@
-import React, { useState } from 'react';
-import './index.css';
-import { Calculator } from 'lucide-react'; // ícone opcional usando lucide-react
+import { Card, Box, Typography, TextField, Button } from '@mui/material'
+import { useIMC } from './useimc'
 
-function App() {
-  const [peso, setPeso] = useState('');
-  const [altura, setAltura] = useState('');
-  const [resultado, setResultado] = useState('');
-
-  const calcularIMC = () => {
-    const alturaMetros = parseFloat(altura) / 100;
-    const pesoFloat = parseFloat(peso);
-
-    if (!alturaMetros || !pesoFloat) {
-      setResultado('Preencha os dois campos corretamente.');
-      return;
-    }
-
-    const imc = pesoFloat / (alturaMetros * alturaMetros);
-    const imcFormatado = imc.toFixed(2);
-
-    let mensagem = '';
-
-    if (imc < 18.5) mensagem = 'Abaixo do peso';
-    else if (imc < 24.9) mensagem = 'Peso normal';
-    else if (imc < 29.9) mensagem = 'Sobrepeso';
-    else if (imc < 34.9) mensagem = 'Obesidade grau 1';
-    else if (imc < 39.9) mensagem = 'Obesidade grau 2';
-    else mensagem = 'Obesidade grau 3';
-
-    setResultado(`IMC: ${imcFormatado} — ${mensagem}`);
-  };
+export default function App() {
+  const {
+    peso,
+    setPeso,
+    altura,
+    setAltura,
+    imc,
+    classificacao,
+    erro,
+    calcularIMC
+  } = useIMC()
 
   return (
-    <div className="card-container">
-      <div className="card">
-        <h2>
-          <Calculator size={24} /> Calculadora de IMC
-        </h2>
-        <div className="inputs">
-          <input
-            type="number"
-            placeholder="Peso (kg)"
-            value={peso}
-            onChange={(e) => setPeso(e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="Altura (cm)"
-            value={altura}
-            onChange={(e) => setAltura(e.target.value)}
-          />
-        </div>
-        <button onClick={calcularIMC}>Calcular</button>
-        <div className="resultado">{resultado}</div>
-      </div>
-    </div>
-  );
-}
+    <Box
+      display={'flex'}
+      justifyContent={'center'}
+      alignItems={'flex-start'}
+      width={'100vw'}
+      height={'100vh'}
+    >
+      <Card
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        width: '100%',
+        marginTop: '144px',
+        marginX: '16px',
+      }}
+      >
 
-export default App;
+        <Box
+          marginY={`16px`} display="flex" alignItems="center" gap={1}
+        >
+          <img src="/calculadora.png" alt="Icone Calculadora" width="32" height="32" />
+
+          <Typography variant='h5' fontWeight={'700'} >Calculadora IMC</Typography>
+        </Box>
+
+        <Box
+          display="flex" flexDirection="column" marginBottom="16px" gap={2} width="80%"
+        >
+          <TextField label="Peso (kg)" variant="outlined" fullWidth value={peso} onChange={(e) => setPeso(e.target.value)} />
+          <TextField label="Altura (m)" variant="outlined" fullWidth value={altura} onChange={(e) => setAltura(e.target.value)} />
+          <Button variant="contained" color="primary" onClick={calcularIMC}>
+            Calcular IMC
+          </Button>
+        </Box>
+
+        {erro && (
+          <Typography color="error" fontSize="0.9rem">
+            {erro}
+          </Typography>
+        )}
+
+        {imc !== null && (
+          <Box 
+            marginBottom="16px"
+            width="80%"
+            display="flex"
+            flexDirection="column"
+            alignItems="flex-start"
+          >
+            <Typography variant="h6" fontWeight={'700'}>Resultado:</Typography>
+            <Typography>Seu IMC é: {imc}</Typography>
+            <Typography>Classificação: {classificacao}</Typography>
+          </Box>
+        )}
+
+      </Card>
+    </Box>
+  )
+}
